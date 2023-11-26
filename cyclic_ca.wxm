@@ -1,0 +1,50 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: input   start ] */
+(/* CA package loading */
+ load("path/cyclic.lisp"),
+
+ /* A 100 x 100 cellular space */
+ nr: 100,
+ nc: 100,
+
+ /* cellular automaton parameters */
+ n_states: 10,
+ threshold: 1,
+ n_iterations: 100,
+
+ /* initial random state */
+ ini: apply(matrix, makelist(makelist(random(n_states),k,1,nc),j,1,nr)),
+
+ /* simulation process */
+ im: ca_cyclic_von_neumann(ini,n_states,threshold,n_iterations),
+
+ /* global drawing options */
+ global_options: 
+   [terminal    = animated_gif,
+    delay       = 20,
+    file_name   = "cyclic_ca",
+    dimensions   = [300,300]],
+
+ frames:
+   makelist(gr2d(title       = concat("step ",k),
+                 colorbox    = false,
+                 axis_top    = false,
+                 axis_right  = false,
+                 axis_left   = false,
+                 axis_bottom = false,
+                 xtics       = none,
+                 ytics       = none,
+                 ztics       = none,
+                 palette     = [3,21,-10],
+                 image(im[k+1],0,0,1,1)),
+             k,0,n_iterations),
+
+ /* this part may take a while! */
+ apply(draw, append(global_options, frames)) )$
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$

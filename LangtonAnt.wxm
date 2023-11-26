@@ -1,0 +1,66 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: input   start ] */
+/* Define the grid size */
+gridSize: 60$
+
+/* Create the grid */
+grid: zeromatrix(gridSize, gridSize)$
+
+/* Define the ant's starting position */
+antX: floor(gridSize/2)$
+antY: floor(gridSize/2)$
+
+/* Define the ant's initial direction */
+direction: "down"$
+
+/* Define the number of steps */
+steps: 10500$
+
+for i: 1 thru steps do (
+  /* Check the color of the cell */
+  currentColor: grid[antX, antY],
+  
+  /* Change the color and direction based on the rules */
+  if currentColor = 0 then (
+    grid[antX, antY]: 1,
+    if direction = "up" then (
+      direction: "right",
+      antX: antX + 1
+    ) else if direction = "right" then (
+      direction: "down",
+      antY: antY + 1
+    ) else if direction = "down" then (
+      direction: "left",
+      antX: antX - 1
+    ) else if direction = "left" then (
+      direction: "up",
+      antY: antY - 1
+    )
+  ) else (
+    grid[antX, antY]: 0,
+    if direction = "up" then (
+      direction: "left",
+      antX: antX - 1
+    ) else if direction = "right" then (
+      direction: "up",
+      antY: antY - 1
+    ) else if direction = "down" then (
+      direction: "right",
+      antX: antX + 1
+    ) else if direction = "left" then (
+      direction: "down",
+      antY: antY + 1
+    )
+  )
+);
+
+/* Display the grid */
+wxdraw2d(image(grid,0,0,30,30)
+);
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$

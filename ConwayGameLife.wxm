@@ -1,0 +1,59 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: input   start ] */
+life(A) := block(
+   [p, q, B: zerofor(A), s],
+   [p, q]: matrix_size(A),
+   for i thru p do (
+      for j thru q do (
+         s: 0,
+         if j > 1 then s: s + A[i, j - 1],
+         if j < q then s: s + A[i, j + 1],
+         if i > 1 then (
+            s: s + A[i - 1, j],
+            if j > 1 then s: s + A[i - 1, j - 1],
+            if j < q then s: s + A[i - 1, j + 1]
+         ),
+         if i < p then (
+            s: s + A[i + 1, j],
+            if j > 1 then s: s + A[i + 1, j - 1],
+            if j < q then s: s + A[i + 1, j + 1]
+         ),
+         B[i, j]: charfun(s = 3 or (s = 2 and A[i, j] = 1))
+      )
+   ),
+   B
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* a glider */
+
+L: matrix([0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+          [0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+gen(A, n) := block(thru n do A: life(A), A)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+gen(L, 4);
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$
