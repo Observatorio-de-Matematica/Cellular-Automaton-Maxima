@@ -1,0 +1,97 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: input   start ] */
+/* Copies an array. Copies multidimensional arrays. */
+eval_string_lisp("(defun copy-array (array)
+  (let ((dims (array-dimensions array)))
+    (adjust-array
+      (make-array
+         dims
+         :element-type (array-element-type array)
+         :displaced-to array)
+      dims)))");
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+/* Transforms a 2d array into a Maxima matrix */
+eval_string_lisp("(defun array2matrix (ar)
+  (let* ((dims (array-dimensions ar))
+         (nrows (car dims))
+         (ncols (cadr dims))
+         arow)
+    (append
+       '(($matrix simp))
+       (loop for nr below nrows do
+          (setf arow (loop for nc below ncols
+                        collect (aref ar nr nc)) )
+          collect (cons '(mlist simp) arow)) ) ) )");
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+:lisp (defun $ca_cyclic_von_neumann (inistate k n numiter) (when (or (not (integerp k)) (< k 2)) (merror "Number of different cell states must be an integer greater than 1") ) (when (or (not ($matrixp inistate)) (notevery #'(lambda (z) (and (integerp z) (>= z 0) (< z k))) (apply #'append (map 'list #'rest (rest inistate))) ) (< ($length inistate) 3) (< ($length (cadr inistate)) 3)) (merror "Initial state must be a matrix of integers between 0 and ~M" (- k 1)) ) (when (not (member n '(1 2 3 4))) (merror "Number of infected neighbors must be an integer from 1 to 4")) (when (or (not (integerp numiter)) (< numiter 1)) (merror "Number of iterations must be an integer greater than 0")) (let (history actual next nextstate vecinity prevcol prevrow nextcol nextrow (ncols (length (cdadr inistate))) (nrows (length (cdr inistate)))) (setf actual (make-array (list nrows ncols) :element-type 'unsigned-byte :initial-contents (map 'list #'cdr (cdr inistate))) next (make-array (list nrows ncols) :element-type 'unsigned-byte :initial-element 0)) (setf history (append '((mlist simp)) (list inistate) (loop for m from 1 to numiter do (loop for nr below nrows do (setf prevrow (mod (- nr 1) nrows) nextrow (mod (+ nr 1) nrows) ) (loop for nc below ncols do (setf prevcol (mod (- nc 1) ncols) nextcol (mod (+ nc 1) ncols) ) (setf nextstate (mod (+ (aref actual nr nc) 1) k)) (setf vecinity (list (aref actual prevrow nc) (aref actual nr nextcol) (aref actual nextrow nc) (aref actual nr prevcol))) (if (>= (count nextstate vecinity) n) (setf (aref next nr nc) nextstate) (setf (aref next nr nc) (aref actual nr nc))   )  )) (setf actual (copy-array next)) collect (array2matrix actual)  ) )) history ))
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+set_random_state(make_random_state(true))$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+ /* A 100 x 100 cellular space */
+ nr: 100$
+ nc: 100$
+
+ /* cellular automaton parameters */
+ n_states: 10$
+ threshold: 1$
+ n_iterations: 100$
+
+ /* initial random state */
+ ini: apply(matrix, makelist(makelist(random(n_states),k,1,nc),j,1,nr))$
+
+ /* simulation process */
+ im: ca_cyclic_von_neumann(ini,n_states,threshold,n_iterations)$
+
+ /* global drawing options */
+ /* global_options: 
+   [terminal    = animated_gif,
+    delay       = 20,
+    file_name   = "cyclic_ca",
+    dimensions   = [300,300]]$ */
+
+/* frames:
+   makelist(gr2d(title       = concat("step ",k),
+                 colorbox    = false,
+                 axis_top    = false,
+                 axis_right  = false,
+                 axis_left   = false,
+                 axis_bottom = false,
+                 xtics       = none,
+                 ytics       = none,
+                 ztics       = none,
+                 palette     = [3,21,-10],
+                 image(im[k+1],0,0,1,1)),
+             k,0,n_iterations)$ */
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+wxanimate_draw(k,makelist(i,i,0,100), [title       = concat("step ",k),
+                 colorbox    = false,
+                 axis_top    = false,
+                 axis_right  = false,
+                 axis_left   = false,
+                 axis_bottom = false,
+                 xtics       = none,
+                 ytics       = none,
+                 ztics       = none,
+                 palette     = [4,19,13]],image(im[k+1],0,0,1,1));
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$
