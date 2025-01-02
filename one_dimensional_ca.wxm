@@ -1,0 +1,38 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: comment start ]
+https://rosettacode.org/wiki/One-dimensional_cellular_automata
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+odca(lst):=block(
+    [inicial:lst,len,gen],
+    len:length(inicial),
+    gen:map(
+        lambda([x],if x-1<1 then [0,inicial[x],inicial[x+1]] elseif x+1>len then [inicial[x-1],inicial[x],0] else [inicial[x-1],inicial[x],inicial[x+1]]),
+        makelist(i,i,1,len)
+    ),
+    map(lambda([x],if length(sublist_indices(x,lambda([y],y=1)))=2 then 1 else 0),gen)
+)$
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+test:[0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0];
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+block(
+    [test,list_gen],
+    test:[0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0],
+    list_gen:append([test],makelist(test:apply(odca,[test]),i,1,9)),
+    wxdraw2d(colorbox=false,image(apply(matrix,list_gen),0,0,30,30))
+);
+/* [wxMaxima: input   end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$
